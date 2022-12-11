@@ -9,8 +9,20 @@
 
 
 #define MAXEVENTS 2
+#define CHUNKSIZE   2048
+static char buff[CHUNKSIZE];
 static int epollfd;
 
+
+static int
+serial_read(int fd) {
+    ssize_t bytes = read(fd, buff, CHUNKSIZE);
+    if (bytes == -1) {
+        return -1;
+    }
+
+    write(STDOUT_FILENO, buff, bytes);
+}
 
 static int
 arm(int fd) {
@@ -60,13 +72,17 @@ main(int argc, char **argv) {
 
         for (i = 0; i < fdcount; i++) {
             e = &events[i];
+            if (e->events & EPOLLERR) {
+                FATAL("EPOLLERR");
+            }
             if (e->data.fd == serialfd) {
-
+                if (serial_read(serialfd) == -1) {
+                    FATAL("serial_read");
+                }
             }
-            else if (e->data.fd == STDIN_FILENO) {
-            }
+            // else if (e->data.fd == STDIN_FILENO) {
+            // }
         }
     }
-
     return EXIT_SUCCESS;
 }

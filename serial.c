@@ -78,14 +78,14 @@ serial_open() {
         return -1;
     }
 
-    // tcgetattr(fd, &options);
-    // cfsetispeed(&options, baudrate);
-    // cfsetospeed(&options, baudrate);
+    tcgetattr(fd, &options);
+    cfsetispeed(&options, baudrate);
+    cfsetospeed(&options, baudrate);
 
     // options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);     /*Input*/
     // options.c_oflag &= ~OPOST;                              /*Output*/
-    // tcsetattr(fd, TCSANOW, &options);
-    // tcflush(fd, TCOFLUSH);
+    tcsetattr(fd, TCSANOW, &options);
+    tcflush(fd, TCOFLUSH);
 
     return fd;
 }
