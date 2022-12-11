@@ -1,6 +1,6 @@
 #include "cli.h"
 #include "clog.h"
-#include "serial.h"
+#include "serial_.h"
 
 #include <stdio.h>
 #include <stdlib.h>
