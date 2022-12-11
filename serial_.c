@@ -1,12 +1,14 @@
 #include "cli.h"
-#include "serial.h"
+#include "serial_.h"
 #include "clog.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <fcntl.h>
+#include <linux/serial.h>
 #include <sys/epoll.h>
+#include <sys/ioctl.h>
 
 
 int termiosbaudrate(int b) {
@@ -78,14 +80,30 @@ serial_open() {
         return -1;
     }
 
+    // speed_t speed;
+    // struct serial_struct ss;
+    // ioctl(fd, TIOCGSERIAL, &ss);
+    // ss.flags = (ss.flags & ~ASYNC_SPD_MASK) | ASYNC_SPD_CUST;
+    // ss.custom_divisor = (ss.baud_base + (speed / 2)) / speed;
+    // closestSpeed = ss.baud_base / ss.custom_divisor;
+
+    // if (closestSpeed < speed * 98 / 100 || closestSpeed > speed * 102 / 100) {
+    //     ERROR("Set serial port speed to %d. Closest possible is %d\n", speed, 
+    //             closestSpeed));
+    // }
+
+    // ioctl(fd, TIOCSSERIAL, &ss);
+    // cfsetispeed(&tios, baudrate);
+    // cfsetospeed(&tios, baudrate);
+
     tcgetattr(fd, &options);
     cfsetispeed(&options, baudrate);
     cfsetospeed(&options, baudrate);
 
-    // options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);     /*Input*/
-    // options.c_oflag &= ~OPOST;                              /*Output*/
-    tcsetattr(fd, TCSANOW, &options);
-    tcflush(fd, TCOFLUSH);
+    // // options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);     /*Input*/
+    // // options.c_oflag &= ~OPOST;                              /*Output*/
+    // tcsetattr(fd, TCSANOW, &options);
+    // tcflush(fd, TCOFLUSH);
 
     return fd;
 }
